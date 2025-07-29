@@ -103,7 +103,7 @@ export const FloatingDataPanel: React.FC<FloatingDataPanelProps> = ({ animal }) 
   if (!isVisible) return null
 
   return (
-    <div className="fixed inset-0 z-30">
+    <div className="fixed inset-0 z-30 pointer-events-none">
       {/* UI Toggle Button - Always visible */}
       <div className="absolute top-4 right-4 z-40 pointer-events-auto">
         <Button
@@ -118,7 +118,7 @@ export const FloatingDataPanel: React.FC<FloatingDataPanelProps> = ({ animal }) 
       </div>
 
       {/* Top Panel - Animal Name & Status */}
-      <div className={`absolute top-16 md:top-8 left-1/2 transform -translate-x-1/2 transition-all duration-500 ${
+      <div className={`absolute top-24 md:top-16 left-1/2 transform -translate-x-1/2 transition-all duration-500 ${
         showUI ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4 pointer-events-none'
       }`}>
         <div 
