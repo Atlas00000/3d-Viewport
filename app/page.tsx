@@ -4,6 +4,8 @@ import React, { useState, useCallback, useMemo, useEffect } from "react"
 import { PanelLeft, PanelRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/hooks/use-toast"
+import { ErrorBoundary } from "@/components/ui/error-boundary"
+import { LoadingOverlay } from "@/components/ui/loading"
 
 // Import our custom hooks
 import { useSceneObjects } from "@/hooks/useSceneObjects"
@@ -21,13 +23,14 @@ import { CameraControls } from "@/components/scene/CameraControls"
 
 // Import utilities
 import { createBox, createSphere, createGLTF, generateId, generateName } from "@/utils/objectFactory"
+import { SceneObject } from "@/types/scene"
 
 // Initial scene objects
-const initialSceneObjects = [
+const initialSceneObjects: SceneObject[] = [
   {
     id: "cube-1",
     name: "Cube",
-    type: "box" as const,
+    type: "box",
     position: [0, 0.5, 0],
     rotation: [0, 0, 0],
     scale: [1, 1, 1],
@@ -42,7 +45,7 @@ const initialSceneObjects = [
   {
     id: "sphere-1",
     name: "Sphere",
-    type: "sphere" as const,
+    type: "sphere",
     position: [2, 0.75, -2],
     rotation: [0, 0, 0],
     scale: [1, 1, 1],
@@ -57,7 +60,7 @@ const initialSceneObjects = [
   {
     id: "rectangle-1",
     name: "Rectangle",
-    type: "box" as const,
+    type: "box",
     position: [-2, 0.25, 2],
     rotation: [0, 0, 0],
     scale: [1.5, 0.5, 2],
@@ -85,6 +88,7 @@ export default function ThreeDExplorer() {
   const [environmentPreset, setEnvironmentPreset] = useState<string>("sunset")
   const [showSidebar, setShowSidebar] = useState(true)
   const [isInitialized, setIsInitialized] = useState(false)
+  const [isUploading, setIsUploading] = useState(false)
 
   // Initialize with default objects only once
   useEffect(() => {
@@ -96,7 +100,7 @@ export default function ThreeDExplorer() {
 
   // Get selected object
   const selectedObject = useMemo(
-    () => sceneObjects.find((obj) => obj.id === selectedObjectId),
+    () => sceneObjects.find((obj) => obj.id === selectedObjectId) || null,
     [selectedObjectId, sceneObjects],
   )
 
@@ -145,7 +149,9 @@ export default function ThreeDExplorer() {
           return
         }
 
+        setIsUploading(true)
         const reader = new FileReader()
+        
         reader.onload = (e) => {
           if (e.target?.result) {
             const blob = new Blob([e.target.result], { type: file.type })
@@ -162,14 +168,18 @@ export default function ThreeDExplorer() {
               description: `"${file.name}" added to scene.`,
             })
           }
+          setIsUploading(false)
         }
+        
         reader.onerror = () => {
           toast({
             title: "Upload Failed",
             description: "Could not read the file.",
             variant: "destructive",
           })
+          setIsUploading(false)
         }
+        
         reader.readAsArrayBuffer(file)
       }
     },
@@ -178,7 +188,7 @@ export default function ThreeDExplorer() {
 
   // Object property change handler
   const handleObjectPropertyChange = useCallback(
-    (property: keyof any, value: any, axis?: 0 | 1 | 2) => {
+    (property: keyof SceneObject, value: any, axis?: 0 | 1 | 2) => {
       if (!selectedObject) return
       updateObjectProperty(selectedObject.id, property, value, axis)
       // Add to history after property change
@@ -186,7 +196,7 @@ export default function ThreeDExplorer() {
         obj.id === selectedObject.id 
           ? { ...obj, [property]: axis !== undefined && ['position', 'rotation', 'scale'].includes(property)
               ? (() => {
-                  const newValue = [...obj[property as keyof any]] as [number, number, number]
+                  const newValue = [...obj[property as keyof SceneObject]] as [number, number, number]
                   newValue[axis] = value
                   return newValue
                 })()
@@ -225,92 +235,99 @@ export default function ThreeDExplorer() {
   }, [sceneObjects])
 
   return (
-    <div className="relative w-full h-screen bg-gray-100 overflow-hidden">
-      {/* Header */}
-      <header className="absolute top-0 left-0 right-0 z-10 p-4 bg-white bg-opacity-80 shadow-md flex justify-between items-center">
-        <h1 className="text-xl font-bold text-gray-800">3D Explorer</h1>
-        <nav className="flex items-center space-x-4">
-          <ul className="flex space-x-4">
-            <li>
-              <a href="#" className="text-gray-700 hover:text-gray-900 font-medium">
-                Home
-              </a>
-            </li>
-            <li>
-              <a href="#" className="text-gray-700 hover:text-gray-900 font-medium">
-                Models
-              </a>
-            </li>
-            <li>
-              <a href="#" className="text-gray-700 hover:text-gray-900 font-medium">
-                Settings
-              </a>
-            </li>
-          </ul>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setShowSidebar(!showSidebar)}
-            aria-label={showSidebar ? "Hide Control Panel" : "Show Control Panel"}
-          >
-            {showSidebar ? <PanelLeft className="h-5 w-5" /> : <PanelRight className="h-5 w-5" />}
-          </Button>
-        </nav>
-      </header>
+    <ErrorBoundary>
+      <div className="relative w-full h-screen bg-gray-100 overflow-hidden">
+        {/* Loading overlay for file uploads */}
+        {isUploading && (
+          <LoadingOverlay text="Uploading model..." />
+        )}
 
-      {/* Sidebar */}
-      <aside
-        className={`absolute top-16 left-0 bottom-0 z-10 w-64 p-4 bg-white bg-opacity-80 shadow-md overflow-auto transition-all duration-300 ease-in-out ${
-          showSidebar ? "translate-x-0" : "-translate-x-full"
-        } md:block`}
-      >
-        <h2 className="text-lg font-semibold mb-4 text-gray-800">Controls</h2>
+        {/* Header */}
+        <header className="absolute top-0 left-0 right-0 z-10 p-4 bg-white bg-opacity-80 shadow-md flex justify-between items-center">
+          <h1 className="text-xl font-bold text-gray-800">3D Explorer</h1>
+          <nav className="flex items-center space-x-4">
+            <ul className="flex space-x-4">
+              <li>
+                <a href="#" className="text-gray-700 hover:text-gray-900 font-medium">
+                  Home
+                </a>
+              </li>
+              <li>
+                <a href="#" className="text-gray-700 hover:text-gray-900 font-medium">
+                  Models
+                </a>
+              </li>
+              <li>
+                <a href="#" className="text-gray-700 hover:text-gray-900 font-medium">
+                  Settings
+                </a>
+              </li>
+            </ul>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setShowSidebar(!showSidebar)}
+              aria-label={showSidebar ? "Hide Control Panel" : "Show Control Panel"}
+            >
+              {showSidebar ? <PanelLeft className="h-5 w-5" /> : <PanelRight className="h-5 w-5" />}
+            </Button>
+          </nav>
+        </header>
 
-        {/* Camera Controls */}
-        <CameraControls onReset={resetCamera} />
+        {/* Sidebar */}
+        <aside
+          className={`absolute top-16 left-0 bottom-0 z-10 w-64 p-4 bg-white bg-opacity-80 shadow-md overflow-auto transition-all duration-300 ease-in-out ${
+            showSidebar ? "translate-x-0" : "-translate-x-full"
+          } md:block`}
+        >
+          <h2 className="text-lg font-semibold mb-4 text-gray-800">Controls</h2>
 
-        {/* Scene Controls */}
-        <SceneControls
-          onUndo={undo}
-          onRedo={redo}
-          canUndo={canUndo}
-          canRedo={canRedo}
-          onAddBox={handleAddBox}
-          onAddSphere={handleAddSphere}
-          onAddGLTF={handleAddGLTF}
-          onModelUpload={handleModelUpload}
-        />
+          {/* Camera Controls */}
+          <CameraControls onReset={resetCamera} />
 
-        {/* Lighting Controls */}
-        <LightingControls
-          environmentPreset={environmentPreset}
-          onEnvironmentChange={setEnvironmentPreset}
+          {/* Scene Controls */}
+          <SceneControls
+            onUndo={undo}
+            onRedo={redo}
+            canUndo={canUndo}
+            canRedo={canRedo}
+            onAddBox={handleAddBox}
+            onAddSphere={handleAddSphere}
+            onAddGLTF={handleAddGLTF}
+            onModelUpload={handleModelUpload}
+          />
+
+          {/* Lighting Controls */}
+          <LightingControls
+            environmentPreset={environmentPreset}
+            onEnvironmentChange={setEnvironmentPreset}
+            directionalLight={directionalLight}
+            pointLight={pointLight}
+            onDirectionalLightChange={updateDirectionalLight}
+            onPointLightChange={updatePointLight}
+          />
+
+          {/* Object Properties */}
+          <ObjectProperties
+            selectedObject={selectedObject}
+            onPropertyChange={handleObjectPropertyChange}
+            onDeleteObject={handleDeleteObject}
+            onClearSelection={clearSelection}
+          />
+        </aside>
+
+        {/* 3D Viewport */}
+        <SceneViewport
+          sceneObjects={sceneObjects}
+          selectedObjectId={selectedObjectId}
+          onObjectSelect={selectObject}
           directionalLight={directionalLight}
           pointLight={pointLight}
-          onDirectionalLightChange={updateDirectionalLight}
-          onPointLightChange={updatePointLight}
+          environmentPreset={environmentPreset}
+          showSidebar={showSidebar}
+          orbitControlsRef={getCameraRef()}
         />
-
-        {/* Object Properties */}
-        <ObjectProperties
-          selectedObject={selectedObject}
-          onPropertyChange={handleObjectPropertyChange}
-          onDeleteObject={handleDeleteObject}
-          onClearSelection={clearSelection}
-        />
-      </aside>
-
-      {/* 3D Viewport */}
-      <SceneViewport
-        sceneObjects={sceneObjects}
-        selectedObjectId={selectedObjectId}
-        onObjectSelect={selectObject}
-        directionalLight={directionalLight}
-        pointLight={pointLight}
-        environmentPreset={environmentPreset}
-        showSidebar={showSidebar}
-        orbitControlsRef={getCameraRef()}
-      />
-    </div>
+      </div>
+    </ErrorBoundary>
   )
 }

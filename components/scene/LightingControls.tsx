@@ -1,6 +1,6 @@
 "use client"
 
-import React from "react"
+import React, { memo } from "react"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Slider } from "@/components/ui/slider"
@@ -16,7 +16,7 @@ interface LightingControlsProps {
   onPointLightChange: (property: keyof LightState, value: any, axis?: 0 | 1 | 2) => void
 }
 
-export const LightingControls: React.FC<LightingControlsProps> = ({
+export const LightingControls: React.FC<LightingControlsProps> = memo(({
   environmentPreset,
   onEnvironmentChange,
   directionalLight,
@@ -27,7 +27,7 @@ export const LightingControls: React.FC<LightingControlsProps> = ({
   return (
     <div className="mb-6 p-3 border rounded-md bg-gray-50">
       <h3 className="text-md font-semibold mb-2 text-gray-700">Lighting</h3>
-      
+
       {/* Environment Preset */}
       <Label htmlFor="environment-preset" className="block mb-1 text-gray-700">
         Environment
@@ -53,7 +53,7 @@ export const LightingControls: React.FC<LightingControlsProps> = ({
       {/* Directional Light */}
       <div className="mt-4 pt-3 border-t border-gray-200">
         <h4 className="text-sm font-semibold mb-2 text-gray-700">Directional Light</h4>
-        
+
         <Label htmlFor="dirLightColor" className="block mb-1 text-gray-700">
           Color
         </Label>
@@ -64,7 +64,7 @@ export const LightingControls: React.FC<LightingControlsProps> = ({
           onChange={(e) => onDirectionalLightChange("color", e.target.value)}
           className="h-8 w-full p-0"
         />
-        
+
         <Label htmlFor="dirLightIntensity" className="block mt-2 mb-1 text-gray-700">
           Intensity
         </Label>
@@ -108,7 +108,7 @@ export const LightingControls: React.FC<LightingControlsProps> = ({
       {/* Point Light */}
       <div className="mt-4 pt-3 border-t border-gray-200">
         <h4 className="text-sm font-semibold mb-2 text-gray-700">Point Light</h4>
-        
+
         <Label htmlFor="pointLightColor" className="block mb-1 text-gray-700">
           Color
         </Label>
@@ -119,7 +119,7 @@ export const LightingControls: React.FC<LightingControlsProps> = ({
           onChange={(e) => onPointLightChange("color", e.target.value)}
           className="h-8 w-full p-0"
         />
-        
+
         <Label htmlFor="pointLightIntensity" className="block mt-2 mb-1 text-gray-700">
           Intensity
         </Label>
@@ -161,4 +161,6 @@ export const LightingControls: React.FC<LightingControlsProps> = ({
       </div>
     </div>
   )
-} 
+})
+
+LightingControls.displayName = 'LightingControls' 

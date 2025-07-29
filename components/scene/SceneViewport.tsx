@@ -1,6 +1,6 @@
 "use client"
 
-import React from "react"
+import React, { memo } from "react"
 import { Canvas } from "@react-three/fiber"
 import { OrbitControls, Environment, Plane, Grid } from "@react-three/drei"
 import { SceneObject } from "@/types/scene"
@@ -30,7 +30,7 @@ interface SceneViewportProps {
   orbitControlsRef: React.RefObject<any>
 }
 
-export const SceneViewport: React.FC<SceneViewportProps> = ({
+export const SceneViewport: React.FC<SceneViewportProps> = memo(({
   sceneObjects,
   selectedObjectId,
   onObjectSelect,
@@ -59,20 +59,20 @@ export const SceneViewport: React.FC<SceneViewportProps> = ({
         shadow-mapSize-height={directionalLight.shadowMapSize[1]}
         shadow-bias={directionalLight.shadowBias}
       />
-      <pointLight 
-        position={pointLight.position} 
-        intensity={pointLight.intensity} 
-        color={pointLight.color} 
+      <pointLight
+        position={pointLight.position}
+        intensity={pointLight.intensity}
+        color={pointLight.color}
       />
-      
+
       {/* Environment component for background and global illumination */}
       <Environment preset={environmentPreset as any} background />
-      
+
       {/* Ground Plane */}
       <Plane args={[100, 100]} rotation-x={-Math.PI / 2} receiveShadow>
         <meshStandardMaterial color="#cccccc" />
       </Plane>
-      
+
       {/* Grid Helper */}
       <Grid
         renderOrder={-1}
@@ -85,7 +85,7 @@ export const SceneViewport: React.FC<SceneViewportProps> = ({
         sectionColor="#888888"
         cellColor="#bbbbbb"
       />
-      
+
       {/* Render scene objects dynamically */}
       {sceneObjects.map((obj) => (
         <SelectableWrapper
@@ -158,9 +158,11 @@ export const SceneViewport: React.FC<SceneViewportProps> = ({
           }
         </SelectableWrapper>
       ))}
-      
+
       {/* Orbital Camera Controls */}
       <OrbitControls makeDefault ref={orbitControlsRef} />
     </Canvas>
   )
-} 
+})
+
+SceneViewport.displayName = 'SceneViewport' 

@@ -1,6 +1,6 @@
 "use client"
 
-import React from "react"
+import React, { memo } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -17,7 +17,7 @@ interface SceneControlsProps {
   onModelUpload: (event: React.ChangeEvent<HTMLInputElement>) => void
 }
 
-export const SceneControls: React.FC<SceneControlsProps> = ({
+export const SceneControls: React.FC<SceneControlsProps> = memo(({
   onUndo,
   onRedo,
   canUndo,
@@ -60,15 +60,17 @@ export const SceneControls: React.FC<SceneControlsProps> = ({
           <Label htmlFor="model-upload" className="block mt-4 mb-1 text-gray-700">
             Upload Custom GLTF/GLB
           </Label>
-          <Input 
-            id="model-upload" 
-            type="file" 
-            accept=".glb,.gltf" 
-            onChange={onModelUpload} 
-            className="h-9" 
+          <Input
+            id="model-upload"
+            type="file"
+            accept=".glb,.gltf"
+            onChange={onModelUpload}
+            className="h-9"
           />
         </div>
       </div>
     </>
   )
-} 
+})
+
+SceneControls.displayName = 'SceneControls' 

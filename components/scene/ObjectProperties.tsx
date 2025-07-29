@@ -1,6 +1,6 @@
 "use client"
 
-import React from "react"
+import React, { memo } from "react"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Slider } from "@/components/ui/slider"
@@ -15,7 +15,7 @@ interface ObjectPropertiesProps {
   onClearSelection: () => void
 }
 
-export const ObjectProperties: React.FC<ObjectPropertiesProps> = ({
+export const ObjectProperties: React.FC<ObjectPropertiesProps> = memo(({
   selectedObject,
   onPropertyChange,
   onDeleteObject,
@@ -136,7 +136,7 @@ export const ObjectProperties: React.FC<ObjectPropertiesProps> = ({
                 type="number"
                 step="0.1"
                 value={selectedObject.scale[0].toFixed(2)}
-                onChange={(e) => onPropertyChange("scale", Number.parseFloat(e.target.value) || 1, 0)}
+                onChange={(e) => onPropertyChange("scale", Number.parseFloat(e.target.value) || 0, 0)}
                 className="h-8"
               />
               <span className="text-xs text-gray-500 block text-center mt-1">X</span>
@@ -148,7 +148,7 @@ export const ObjectProperties: React.FC<ObjectPropertiesProps> = ({
                 type="number"
                 step="0.1"
                 value={selectedObject.scale[1].toFixed(2)}
-                onChange={(e) => onPropertyChange("scale", Number.parseFloat(e.target.value) || 1, 1)}
+                onChange={(e) => onPropertyChange("scale", Number.parseFloat(e.target.value) || 0, 1)}
                 className="h-8"
               />
               <span className="text-xs text-gray-500 block text-center mt-1">Y</span>
@@ -160,7 +160,7 @@ export const ObjectProperties: React.FC<ObjectPropertiesProps> = ({
                 type="number"
                 step="0.1"
                 value={selectedObject.scale[2].toFixed(2)}
-                onChange={(e) => onPropertyChange("scale", Number.parseFloat(e.target.value) || 1, 2)}
+                onChange={(e) => onPropertyChange("scale", Number.parseFloat(e.target.value) || 0, 2)}
                 className="h-8"
               />
               <span className="text-xs text-gray-500 block text-center mt-1">Z</span>
@@ -172,7 +172,6 @@ export const ObjectProperties: React.FC<ObjectPropertiesProps> = ({
         {selectedObject.type !== "gltf" && (
           <div className="mt-4 pt-3 border-t border-gray-200">
             <h4 className="text-sm font-semibold mb-2 text-gray-700">Material</h4>
-            
             <Label htmlFor="materialColor" className="block mb-1 text-gray-700">
               Color
             </Label>
@@ -257,13 +256,15 @@ export const ObjectProperties: React.FC<ObjectPropertiesProps> = ({
                 checked={selectedObject.wireframe}
                 onCheckedChange={(checked) => onPropertyChange("wireframe", checked)}
               />
-              <Label htmlFor="wireframe" className="text-sm font-medium leading-none">
+              <Label
+                htmlFor="wireframe"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
                 Wireframe
               </Label>
             </div>
           </div>
         )}
-        
         {selectedObject.type === "gltf" && (
           <p className="text-sm text-gray-500 mt-4">
             Material properties for GLTF models are not editable in this viewer.
@@ -279,4 +280,6 @@ export const ObjectProperties: React.FC<ObjectPropertiesProps> = ({
       </div>
     </div>
   )
-} 
+})
+
+ObjectProperties.displayName = 'ObjectProperties' 

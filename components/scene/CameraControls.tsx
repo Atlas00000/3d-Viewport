@@ -1,13 +1,13 @@
 "use client"
 
-import React from "react"
+import React, { memo } from "react"
 import { Button } from "@/components/ui/button"
 
 interface CameraControlsProps {
   onReset: () => void
 }
 
-export const CameraControls: React.FC<CameraControlsProps> = ({ onReset }) => {
+export const CameraControls: React.FC<CameraControlsProps> = memo(({ onReset }) => {
   return (
     <div className="mb-6 p-3 border rounded-md bg-gray-50">
       <h3 className="text-md font-semibold mb-2 text-gray-700">Camera</h3>
@@ -17,4 +17,6 @@ export const CameraControls: React.FC<CameraControlsProps> = ({ onReset }) => {
       </Button>
     </div>
   )
-} 
+})
+
+CameraControls.displayName = 'CameraControls' 
