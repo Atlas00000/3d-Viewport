@@ -3,7 +3,7 @@ import { SceneObject } from '@/types/scene'
 
 export const useSceneHistory = () => {
   const [history, setHistory] = useState<SceneObject[][]>([])
-  const [historyIndex, setHistoryIndex] = useState(0)
+  const [historyIndex, setHistoryIndex] = useState(-1) // Start at -1 to indicate no history
   
   const addToHistory = useCallback((sceneObjects: SceneObject[]) => {
     setHistory(prev => {

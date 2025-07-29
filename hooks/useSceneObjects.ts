@@ -44,6 +44,10 @@ export const useSceneObjects = () => {
     setSceneObjects([])
   }, [])
   
+  const setObjects = useCallback((objects: SceneObject[]) => {
+    setSceneObjects(objects)
+  }, [])
+  
   return {
     sceneObjects,
     addObject,
@@ -51,5 +55,6 @@ export const useSceneObjects = () => {
     deleteObject,
     updateObjectProperty,
     clearObjects,
+    setObjects,
   }
 } 
