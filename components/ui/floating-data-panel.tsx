@@ -103,7 +103,7 @@ export const FloatingDataPanel: React.FC<FloatingDataPanelProps> = ({ animal }) 
   if (!isVisible) return null
 
   return (
-    <div className="fixed inset-0 pointer-events-none z-30">
+    <div className="fixed inset-0 z-30">
       {/* UI Toggle Button - Always visible */}
       <div className="absolute top-4 right-4 z-40 pointer-events-auto">
         <Button
@@ -118,11 +118,11 @@ export const FloatingDataPanel: React.FC<FloatingDataPanelProps> = ({ animal }) 
       </div>
 
       {/* Top Panel - Animal Name & Status */}
-      <div className={`absolute top-2 md:top-8 left-1/2 transform -translate-x-1/2 transition-all duration-500 ${
+      <div className={`absolute top-16 md:top-8 left-1/2 transform -translate-x-1/2 transition-all duration-500 ${
         showUI ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4 pointer-events-none'
       }`}>
         <div 
-          className={`bg-white/10 backdrop-blur-md rounded-2xl p-3 md:p-4 border border-white/20 shadow-2xl transition-all duration-500 max-w-[90vw] md:max-w-none ${
+          className={`bg-white/10 backdrop-blur-md rounded-2xl p-2 md:p-4 border border-white/20 shadow-2xl transition-all duration-500 max-w-[85vw] md:max-w-none pointer-events-auto ${
             hoveredPanel === 'top' ? 'bg-white/20 scale-105' : ''
           }`}
           onMouseEnter={() => setHoveredPanel('top')}
@@ -156,14 +156,6 @@ export const FloatingDataPanel: React.FC<FloatingDataPanelProps> = ({ animal }) 
               >
                 {soundEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
               </Button>
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={toggleStats}
-                className="bg-white/20 hover:bg-white/30 text-white border border-white/30"
-              >
-                <Eye className="h-4 w-4" />
-              </Button>
             </div>
           </div>
         </div>
@@ -174,7 +166,7 @@ export const FloatingDataPanel: React.FC<FloatingDataPanelProps> = ({ animal }) 
         showUI ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4 pointer-events-none'
       }`}>
         <div 
-          className={`bg-white/10 backdrop-blur-md rounded-2xl p-3 md:p-4 border border-white/20 shadow-2xl max-w-[140px] md:max-w-xs transition-all duration-500 ${
+          className={`bg-white/10 backdrop-blur-md rounded-2xl p-3 md:p-4 border border-white/20 shadow-2xl max-w-[140px] md:max-w-xs transition-all duration-500 pointer-events-auto ${
             hoveredPanel === 'left' ? 'bg-white/20 scale-105' : ''
           }`}
           onMouseEnter={() => setHoveredPanel('left')}
@@ -230,7 +222,7 @@ export const FloatingDataPanel: React.FC<FloatingDataPanelProps> = ({ animal }) 
         showUI ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4 pointer-events-none'
       }`}>
         <div 
-          className={`bg-white/10 backdrop-blur-md rounded-2xl p-3 md:p-4 border border-white/20 shadow-2xl max-w-[140px] md:max-w-xs transition-all duration-500 ${
+          className={`bg-white/10 backdrop-blur-md rounded-2xl p-3 md:p-4 border border-white/20 shadow-2xl max-w-[140px] md:max-w-xs transition-all duration-500 pointer-events-auto ${
             hoveredPanel === 'right' ? 'bg-white/20 scale-105' : ''
           }`}
           onMouseEnter={() => setHoveredPanel('right')}
@@ -295,11 +287,11 @@ export const FloatingDataPanel: React.FC<FloatingDataPanelProps> = ({ animal }) 
       </div>
 
       {/* Bottom Panel - Conservation Info */}
-      <div className={`absolute bottom-4 md:bottom-8 left-1/2 transform -translate-x-1/2 transition-all duration-500 ${
+      <div className={`absolute bottom-4 md:bottom-8 left-1/2 transform -translate-x-1/2 transition-all duration-500 hidden md:block ${
         showUI ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'
       }`}>
         <div 
-          className={`bg-white/10 backdrop-blur-md rounded-2xl p-3 md:p-4 border border-white/20 shadow-2xl transition-all duration-500 ${
+          className={`bg-white/10 backdrop-blur-md rounded-2xl p-3 md:p-4 border border-white/20 shadow-2xl transition-all duration-500 pointer-events-auto ${
             hoveredPanel === 'bottom' ? 'bg-white/20 scale-105' : ''
           }`}
           onMouseEnter={() => setHoveredPanel('bottom')}
@@ -331,30 +323,30 @@ export const FloatingDataPanel: React.FC<FloatingDataPanelProps> = ({ animal }) 
       </div>
 
       {/* Mobile Layout - Stacked Information */}
-      <div className={`absolute bottom-20 left-2 right-2 md:hidden transition-all duration-500 ${
+      <div className={`absolute bottom-4 left-2 right-2 md:hidden transition-all duration-500 max-h-[40vh] overflow-y-auto ${
         showUI ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'
       }`}>
-        <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20 shadow-2xl">
-          <div className="space-y-4">
+        <div className="bg-white/10 backdrop-blur-md rounded-2xl p-3 border border-white/20 shadow-2xl pointer-events-auto">
+          <div className="space-y-3">
             {/* Mobile Habitat & Stats Row */}
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-2">
               {/* Habitat */}
-              <div className="bg-blue-500/20 rounded-xl p-3 border border-blue-300/30">
-                <div className="flex items-center space-x-2 mb-2">
-                  <MapPin className="h-4 w-4 text-blue-300" />
-                  <h3 className="font-bold text-blue-200 text-sm">Habitat</h3>
+              <div className="bg-blue-500/20 rounded-xl p-2 border border-blue-300/30">
+                <div className="flex items-center space-x-1 mb-1">
+                  <MapPin className="h-3 w-3 text-blue-300" />
+                  <h3 className="font-bold text-blue-200 text-xs">Habitat</h3>
                 </div>
-                <p className="text-blue-100 text-xs">{animal.habitat}</p>
+                <p className="text-blue-100 text-xs leading-tight">{animal.habitat}</p>
               </div>
 
               {/* Stats */}
               {animal.stats && showStats && (
-                <div className="bg-green-500/20 rounded-xl p-3 border border-green-300/30">
-                  <div className="flex items-center space-x-2 mb-2">
-                    <Zap className="h-4 w-4 text-green-300" />
-                    <h3 className="font-bold text-green-200 text-sm">Stats</h3>
+                <div className="bg-green-500/20 rounded-xl p-2 border border-green-300/30">
+                  <div className="flex items-center space-x-1 mb-1">
+                    <Zap className="h-3 w-3 text-green-300" />
+                    <h3 className="font-bold text-green-200 text-xs">Stats</h3>
                   </div>
-                  <div className="space-y-1 text-xs">
+                  <div className="space-y-0.5 text-xs">
                     <div className="flex justify-between">
                       <span className="text-green-100">Weight:</span>
                       <span className="text-green-200 font-semibold">{animal.stats.weight}</span>
@@ -369,18 +361,18 @@ export const FloatingDataPanel: React.FC<FloatingDataPanelProps> = ({ animal }) 
             </div>
 
             {/* Mobile Diet & Fun Facts Row */}
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-2">
               {/* Diet */}
-              <div className="bg-yellow-500/20 rounded-xl p-3 border border-yellow-300/30">
-                <div className="flex items-center space-x-2 mb-2">
-                  <Utensils className="h-4 w-4 text-yellow-300" />
-                  <h3 className="font-bold text-yellow-200 text-sm">Diet</h3>
+              <div className="bg-yellow-500/20 rounded-xl p-2 border border-yellow-300/30">
+                <div className="flex items-center space-x-1 mb-1">
+                  <Utensils className="h-3 w-3 text-yellow-300" />
+                  <h3 className="font-bold text-yellow-200 text-xs">Diet</h3>
                 </div>
                 <div className="flex flex-wrap gap-1">
                   {animal.diet.slice(0, 2).map((food, index) => (
                     <Badge 
                       key={index}
-                      className="bg-yellow-500/30 text-yellow-200 border border-yellow-300/50 text-xs"
+                      className="bg-yellow-500/30 text-yellow-200 border border-yellow-300/50 text-xs px-1 py-0.5"
                     >
                       {food}
                     </Badge>
@@ -389,20 +381,20 @@ export const FloatingDataPanel: React.FC<FloatingDataPanelProps> = ({ animal }) 
               </div>
 
               {/* Fun Facts */}
-              <div className="bg-purple-500/20 rounded-xl p-3 border border-purple-300/30">
-                <div className="flex items-center space-x-2 mb-2">
-                  <Info className="h-4 w-4 text-purple-300" />
-                  <h3 className="font-bold text-purple-200 text-sm">Fun Fact</h3>
+              <div className="bg-purple-500/20 rounded-xl p-2 border border-purple-300/30">
+                <div className="flex items-center space-x-1 mb-1">
+                  <Info className="h-3 w-3 text-purple-300" />
+                  <h3 className="font-bold text-purple-200 text-xs">Fun Fact</h3>
                 </div>
-                <p className="text-purple-100 text-xs italic leading-relaxed">
+                <p className="text-purple-100 text-xs italic leading-tight">
                   "{animal.funFacts[currentFactIndex]}"
                 </p>
-                <div className="flex justify-center space-x-1 mt-2">
+                <div className="flex justify-center space-x-1 mt-1">
                   {animal.funFacts.map((_, index) => (
                     <button
                       key={index}
                       onClick={() => setCurrentFactIndex(index)}
-                      className={`w-1.5 h-1.5 rounded-full transition-colors ${
+                      className={`w-1 h-1 rounded-full transition-colors ${
                         index === currentFactIndex 
                           ? 'bg-purple-400' 
                           : 'bg-purple-300/50'
