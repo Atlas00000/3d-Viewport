@@ -1,9 +1,11 @@
 "use client"
 
-import React, { forwardRef, useState } from "react"
+import React, { forwardRef, useState, useRef, useEffect } from "react"
 import { useGLTF } from "@react-three/drei"
 import { ThreeEvent } from "@react-three/fiber"
+import { useFrame } from "@react-three/fiber"
 import { Loading } from "@/components/ui/loading"
+
 
 interface GLTFModelProps {
   modelPath: string
@@ -28,8 +30,10 @@ export const GLTFModel = forwardRef<any, GLTFModelProps>(({
 }, ref) => {
   const [isLoading, setIsLoading] = useState(true)
   const [hasError, setHasError] = useState(false)
+  const mixerRef = useRef<any>(null)
+  const animationsRef = useRef<any[]>([])
 
-  const { scene } = useGLTF(modelPath, true, true, (error) => {
+  const { scene, animations } = useGLTF(modelPath, true, true, (error) => {
     console.error('Error loading GLTF model:', error)
     setHasError(true)
     setIsLoading(false)
@@ -41,7 +45,7 @@ export const GLTFModel = forwardRef<any, GLTFModelProps>(({
     }
   }, [scene])
 
-  // Apply shadow properties to all meshes
+  // Apply shadow properties to all meshes and setup animations
   React.useEffect(() => {
     if (scene) {
       scene.traverse((child: any) => {
@@ -50,8 +54,28 @@ export const GLTFModel = forwardRef<any, GLTFModelProps>(({
           child.receiveShadow = true
         }
       })
+
+      // Setup animations if available
+      if (animations && animations.length > 0) {
+        const mixer = new (require('three').AnimationMixer)(scene)
+        mixerRef.current = mixer
+        animationsRef.current = animations
+
+        // Play all animations
+        animations.forEach((clip) => {
+          const action = mixer.clipAction(clip)
+          action.play()
+        })
+      }
     }
-  }, [scene])
+  }, [scene, animations])
+
+  // Update animations on each frame
+  useFrame((state, delta) => {
+    if (mixerRef.current) {
+      mixerRef.current.update(delta)
+    }
+  })
 
   if (hasError) {
     return (
