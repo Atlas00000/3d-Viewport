@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState, useCallback, useMemo, useEffect } from "react"
-import { PanelLeft, PanelRight } from "lucide-react"
+import { PanelLeft, PanelRight, TreePine, PawPrint, Volume2, VolumeX, Sun, Moon, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/hooks/use-toast"
 import { ErrorBoundary } from "@/components/ui/error-boundary"
@@ -25,56 +25,10 @@ import { CameraControls } from "@/components/scene/CameraControls"
 import { createBox, createSphere, createGLTF, generateId, generateName } from "@/utils/objectFactory"
 import { SceneObject } from "@/types/scene"
 
-// Initial scene objects
-const initialSceneObjects: SceneObject[] = [
-  {
-    id: "cube-1",
-    name: "Cube",
-    type: "box",
-    position: [0, 0.5, 0],
-    rotation: [0, 0, 0],
-    scale: [1, 1, 1],
-    materialColor: "#3498db",
-    roughness: 0.5,
-    metalness: 0,
-    emissive: "#000000",
-    emissiveIntensity: 0,
-    opacity: 1,
-    wireframe: false,
-  },
-  {
-    id: "sphere-1",
-    name: "Sphere",
-    type: "sphere",
-    position: [2, 0.75, -2],
-    rotation: [0, 0, 0],
-    scale: [1, 1, 1],
-    materialColor: "#e74c3c",
-    roughness: 0.2,
-    metalness: 0.8,
-    emissive: "#000000",
-    emissiveIntensity: 0,
-    opacity: 1,
-    wireframe: false,
-  },
-  {
-    id: "rectangle-1",
-    name: "Rectangle",
-    type: "box",
-    position: [-2, 0.25, 2],
-    rotation: [0, 0, 0],
-    scale: [1.5, 0.5, 2],
-    materialColor: "#2ecc71",
-    roughness: 0.7,
-    metalness: 0.1,
-    emissive: "#000000",
-    emissiveIntensity: 0,
-    opacity: 1,
-    wireframe: false,
-  },
-]
+// Initial scene objects - empty to start with a clean scene
+const initialSceneObjects: SceneObject[] = []
 
-export default function ThreeDExplorer() {
+export default function JungleQuest() {
   const { toast } = useToast()
 
   // Use our custom hooks
@@ -89,14 +43,15 @@ export default function ThreeDExplorer() {
   const [showSidebar, setShowSidebar] = useState(true)
   const [isInitialized, setIsInitialized] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
+  const [soundEnabled, setSoundEnabled] = useState(true)
+  const [theme, setTheme] = useState<'day' | 'night'>('day')
 
-  // Initialize with default objects only once
+  // Initialize scene state only once
   useEffect(() => {
-    if (!isInitialized && sceneObjects.length === 0) {
-      initialSceneObjects.forEach(obj => addObject(obj))
+    if (!isInitialized) {
       setIsInitialized(true)
     }
-  }, [addObject, sceneObjects.length, isInitialized])
+  }, [isInitialized])
 
   // Get selected object
   const selectedObject = useMemo(
@@ -111,7 +66,6 @@ export default function ThreeDExplorer() {
     const newObject = createBox(id, name)
     addObject(newObject)
     selectObject(id)
-    // Add to history after object creation
     addToHistory([...sceneObjects, newObject])
   }, [addObject, selectObject, sceneObjects, addToHistory])
 
@@ -121,7 +75,6 @@ export default function ThreeDExplorer() {
     const newObject = createSphere(id, name)
     addObject(newObject)
     selectObject(id)
-    // Add to history after object creation
     addToHistory([...sceneObjects, newObject])
   }, [addObject, selectObject, sceneObjects, addToHistory])
 
@@ -131,7 +84,6 @@ export default function ThreeDExplorer() {
     const newObject = createGLTF(id, name)
     addObject(newObject)
     selectObject(id)
-    // Add to history after object creation
     addToHistory([...sceneObjects, newObject])
   }, [addObject, selectObject, sceneObjects, addToHistory])
 
@@ -161,7 +113,6 @@ export default function ThreeDExplorer() {
             const newObject = createGLTF(id, name, objectURL)
             addObject(newObject)
             selectObject(id)
-            // Add to history after object creation
             addToHistory([...sceneObjects, newObject])
             toast({
               title: "Model Uploaded",
@@ -191,7 +142,6 @@ export default function ThreeDExplorer() {
     (property: keyof SceneObject, value: any, axis?: 0 | 1 | 2) => {
       if (!selectedObject) return
       updateObjectProperty(selectedObject.id, property, value, axis)
-      // Add to history after property change
       const updatedObjects = sceneObjects.map(obj => 
         obj.id === selectedObject.id 
           ? { ...obj, [property]: axis !== undefined && ['position', 'rotation', 'scale'].includes(property)
@@ -214,7 +164,6 @@ export default function ThreeDExplorer() {
     if (!selectedObject) return
     deleteObject(selectedObject.id)
     clearSelection()
-    // Add to history after deletion
     const updatedObjects = sceneObjects.filter(obj => obj.id !== selectedObject.id)
     addToHistory(updatedObjects)
     toast({
@@ -236,84 +185,140 @@ export default function ThreeDExplorer() {
 
   return (
     <ErrorBoundary>
-      <div className="relative w-full h-screen bg-gray-100 overflow-hidden">
+      <div className={`relative w-full h-screen overflow-hidden transition-all duration-500 ${
+        theme === 'day' 
+          ? 'jungle-gradient leaf-pattern' 
+          : 'bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900'
+      }`}>
         {/* Loading overlay for file uploads */}
         {isUploading && (
           <LoadingOverlay text="Uploading model..." />
         )}
 
-        {/* Header */}
-        <header className="absolute top-0 left-0 right-0 z-10 p-4 bg-white bg-opacity-80 shadow-md flex justify-between items-center">
-          <h1 className="text-xl font-bold text-gray-800">3D Explorer</h1>
-          <nav className="flex items-center space-x-4">
-            <ul className="flex space-x-4">
-              <li>
-                <a href="#" className="text-gray-700 hover:text-gray-900 font-medium">
-                  Home
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-gray-700 hover:text-gray-900 font-medium">
-                  Models
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-gray-700 hover:text-gray-900 font-medium">
-                  Settings
-                </a>
-              </li>
-            </ul>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setShowSidebar(!showSidebar)}
-              aria-label={showSidebar ? "Hide Control Panel" : "Show Control Panel"}
-            >
-              {showSidebar ? <PanelLeft className="h-5 w-5" /> : <PanelRight className="h-5 w-5" />}
-            </Button>
-          </nav>
+        {/* Jungle-themed Header */}
+        <header className="absolute top-0 left-0 right-0 z-10 p-4 bg-gradient-to-r from-green-800/90 via-green-700/90 to-green-600/90 backdrop-blur-sm border-b-2 border-green-500/30">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center space-x-3">
+              <div className="flex items-center space-x-2">
+                <TreePine className="h-8 w-8 text-green-300 animate-pulse" />
+                <h1 className="text-2xl font-bold text-white drop-shadow-lg">
+                  <span className="text-yellow-300">Jungle</span>
+                  <span className="text-green-300">Quest</span>
+                </h1>
+              </div>
+              <div className="hidden md:flex items-center space-x-4 ml-6">
+                <span className="text-green-200 text-sm">🐾 3D Animal Explorer</span>
+              </div>
+            </div>
+            
+            <div className="flex items-center space-x-3">
+              {/* Sound Toggle */}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setSoundEnabled(!soundEnabled)}
+                className="jungle-button text-white hover:bg-green-600/50"
+                aria-label={soundEnabled ? "Disable Sound" : "Enable Sound"}
+              >
+                {soundEnabled ? <Volume2 className="h-5 w-5" /> : <VolumeX className="h-5 w-5" />}
+              </Button>
+              
+              {/* Theme Toggle */}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setTheme(theme === 'day' ? 'night' : 'day')}
+                className="jungle-button text-white hover:bg-green-600/50"
+                aria-label={theme === 'day' ? "Switch to Night Mode" : "Switch to Day Mode"}
+              >
+                {theme === 'day' ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
+              </Button>
+              
+              {/* Sidebar Toggle */}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setShowSidebar(!showSidebar)}
+                className="jungle-button text-white hover:bg-green-600/50"
+                aria-label={showSidebar ? "Hide Control Panel" : "Show Control Panel"}
+              >
+                {showSidebar ? <PanelLeft className="h-5 w-5" /> : <PanelRight className="h-5 w-5" />}
+              </Button>
+            </div>
+          </div>
         </header>
 
-        {/* Sidebar */}
+        {/* Jungle-themed Sidebar */}
         <aside
-          className={`absolute top-16 left-0 bottom-0 z-10 w-64 p-4 bg-white bg-opacity-80 shadow-md overflow-auto transition-all duration-300 ease-in-out ${
+          className={`absolute top-20 left-0 bottom-0 z-10 w-72 p-4 bg-gradient-to-b from-green-100/95 via-green-50/95 to-green-100/95 backdrop-blur-sm border-r-2 border-green-300/50 overflow-auto transition-all duration-500 ease-in-out ${
             showSidebar ? "translate-x-0" : "-translate-x-full"
-          } md:block`}
+          } md:block jungle-shadow`}
         >
-          <h2 className="text-lg font-semibold mb-4 text-gray-800">Controls</h2>
+          <div className="space-y-6">
+            {/* Welcome Section */}
+            <div className="text-center p-4 bg-gradient-to-r from-green-200 to-yellow-200 rounded-xl border-2 border-green-300">
+              <Sparkles className="h-6 w-6 text-green-600 mx-auto mb-2" />
+              <h2 className="text-lg font-bold text-green-800">Welcome to JungleQuest!</h2>
+              <p className="text-sm text-green-700 mt-1">Explore amazing animals in 3D! 🦁🐘🦜</p>
+            </div>
 
-          {/* Camera Controls */}
-          <CameraControls onReset={resetCamera} />
+            {/* Camera Controls */}
+            <div className="bg-white/80 rounded-xl p-4 border-2 border-green-200">
+              <h3 className="text-lg font-bold text-green-800 mb-3 flex items-center">
+                <PawPrint className="h-5 w-5 mr-2" />
+                Camera Controls
+              </h3>
+              <CameraControls onReset={resetCamera} />
+            </div>
 
-          {/* Scene Controls */}
-          <SceneControls
-            onUndo={undo}
-            onRedo={redo}
-            canUndo={canUndo}
-            canRedo={canRedo}
-            onAddBox={handleAddBox}
-            onAddSphere={handleAddSphere}
-            onAddGLTF={handleAddGLTF}
-            onModelUpload={handleModelUpload}
-          />
+            {/* Scene Controls */}
+            <div className="bg-white/80 rounded-xl p-4 border-2 border-green-200">
+              <h3 className="text-lg font-bold text-green-800 mb-3 flex items-center">
+                <TreePine className="h-5 w-5 mr-2" />
+                Scene Tools
+              </h3>
+              <SceneControls
+                onUndo={undo}
+                onRedo={redo}
+                canUndo={canUndo}
+                canRedo={canRedo}
+                onAddBox={handleAddBox}
+                onAddSphere={handleAddSphere}
+                onAddGLTF={handleAddGLTF}
+                onModelUpload={handleModelUpload}
+              />
+            </div>
 
-          {/* Lighting Controls */}
-          <LightingControls
-            environmentPreset={environmentPreset}
-            onEnvironmentChange={setEnvironmentPreset}
-            directionalLight={directionalLight}
-            pointLight={pointLight}
-            onDirectionalLightChange={updateDirectionalLight}
-            onPointLightChange={updatePointLight}
-          />
+            {/* Lighting Controls */}
+            <div className="bg-white/80 rounded-xl p-4 border-2 border-green-200">
+              <h3 className="text-lg font-bold text-green-800 mb-3 flex items-center">
+                <Sun className="h-5 w-5 mr-2" />
+                Lighting & Environment
+              </h3>
+              <LightingControls
+                environmentPreset={environmentPreset}
+                onEnvironmentChange={setEnvironmentPreset}
+                directionalLight={directionalLight}
+                pointLight={pointLight}
+                onDirectionalLightChange={updateDirectionalLight}
+                onPointLightChange={updatePointLight}
+              />
+            </div>
 
-          {/* Object Properties */}
-          <ObjectProperties
-            selectedObject={selectedObject}
-            onPropertyChange={handleObjectPropertyChange}
-            onDeleteObject={handleDeleteObject}
-            onClearSelection={clearSelection}
-          />
+            {/* Object Properties */}
+            <div className="bg-white/80 rounded-xl p-4 border-2 border-green-200">
+              <h3 className="text-lg font-bold text-green-800 mb-3 flex items-center">
+                <Sparkles className="h-5 w-5 mr-2" />
+                Object Properties
+              </h3>
+              <ObjectProperties
+                selectedObject={selectedObject}
+                onPropertyChange={handleObjectPropertyChange}
+                onDeleteObject={handleDeleteObject}
+                onClearSelection={clearSelection}
+              />
+            </div>
+          </div>
         </aside>
 
         {/* 3D Viewport */}

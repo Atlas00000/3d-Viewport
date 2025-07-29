@@ -4,9 +4,10 @@ import { GeistMono } from 'geist/font/mono'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: '3D Viewport',
-  description: 'Interactive 3D scene explorer built with Three.js and React',
-  generator: 'v0.dev',
+  title: 'JungleQuest - 3D Animal Explorer',
+  description: 'Explore amazing animals in 3D! Learn about wildlife through interactive models, sounds, and fun facts in our jungle-themed educational platform.',
+  generator: 'JungleQuest',
+  keywords: 'animals, 3D, education, jungle, wildlife, interactive, kids, learning',
 }
 
 export default function RootLayout({
@@ -19,13 +20,13 @@ export default function RootLayout({
       <head>
         <style>{`
 html {
-  font-family: ${GeistSans.style.fontFamily};
+  font-family: 'Comic Sans MS', 'Chalkboard SE', 'Arial Rounded MT Bold', ${GeistSans.style.fontFamily}, sans-serif;
   --font-sans: ${GeistSans.variable};
   --font-mono: ${GeistMono.variable};
 }
         `}</style>
       </head>
-      <body>{children}</body>
+      <body className="jungle-theme">{children}</body>
     </html>
   )
 }
