@@ -24,6 +24,8 @@ import { CameraControls } from "@/components/scene/CameraControls"
 // Import utilities
 import { createBox, createSphere, createGLTF, generateId, generateName } from "@/utils/objectFactory"
 import { SceneObject } from "@/types/scene"
+import { FloatingDataPanel } from "@/components/ui/floating-data-panel"
+import { polarBearData } from "@/data/polar-bear-data"
 
 // Initial scene objects - empty to start with a clean scene
 const initialSceneObjects: SceneObject[] = []
@@ -40,11 +42,12 @@ export default function JungleQuest() {
   
   // Local state
   const [environmentPreset, setEnvironmentPreset] = useState<string>("sunset")
-  const [showSidebar, setShowSidebar] = useState(true)
+  const [showSidebar, setShowSidebar] = useState(false) // Temporarily disabled for admin use
   const [isInitialized, setIsInitialized] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
   const [soundEnabled, setSoundEnabled] = useState(true)
   const [theme, setTheme] = useState<'day' | 'night'>('day')
+
 
   // Initialize scene state only once
   useEffect(() => {
@@ -234,7 +237,7 @@ export default function JungleQuest() {
                 {theme === 'day' ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
               </Button>
               
-              {/* Sidebar Toggle */}
+              {/* Sidebar Toggle - Temporarily disabled for admin use
               <Button
                 variant="ghost"
                 size="icon"
@@ -244,6 +247,7 @@ export default function JungleQuest() {
               >
                 {showSidebar ? <PanelLeft className="h-5 w-5" /> : <PanelRight className="h-5 w-5" />}
               </Button>
+              */}
             </div>
           </div>
         </header>
@@ -332,6 +336,9 @@ export default function JungleQuest() {
           showSidebar={showSidebar}
           orbitControlsRef={getCameraRef()}
         />
+
+        {/* Floating Data Panel */}
+        <FloatingDataPanel animal={polarBearData} />
       </div>
     </ErrorBoundary>
   )

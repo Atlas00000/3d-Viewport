@@ -28,6 +28,7 @@ interface SceneViewportProps {
   environmentPreset: string
   showSidebar: boolean
   orbitControlsRef: React.RefObject<any>
+  onInfoClick?: () => void
 }
 
 export const SceneViewport: React.FC<SceneViewportProps> = memo(({
@@ -39,6 +40,7 @@ export const SceneViewport: React.FC<SceneViewportProps> = memo(({
   environmentPreset,
   showSidebar,
   orbitControlsRef,
+  onInfoClick,
 }) => {
   return (
     <div className="relative w-full h-full">
@@ -63,6 +65,8 @@ export const SceneViewport: React.FC<SceneViewportProps> = memo(({
           </ul>
         </div>
       </div>
+
+
 
       <Canvas
         camera={{ position: [0, 5, 10], fov: 75 }}
