@@ -208,8 +208,11 @@ export const SceneViewport: React.FC<SceneViewportProps> = memo(({
           enableDamping
           dampingFactor={0.05}
           maxPolarAngle={Math.PI / 2}
-          minDistance={2}
-          maxDistance={50}
+          minDistance={1}
+          maxDistance={15}
+          minAzimuthAngle={-Math.PI / 2}
+          maxAzimuthAngle={Math.PI / 2}
+          enablePan={false}
         />
       </Canvas>
     </div>
